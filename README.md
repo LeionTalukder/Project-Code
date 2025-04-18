@@ -1,184 +1,244 @@
-import java.io.*;
 import java.util.*;
 
 public class LibraryManagementSystem {
 
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final HashMap<String, String> users = new HashMap<>();
+    private static final ArrayList<Book> books = new ArrayList<>();
+    private static String currentUser = null;
+
     public static void main(String[] args) {
-        text();
-        loading();
-        menu();
+        welcomeScreen();
     }
 
-    public static void loading() {
-        System.out.println("\n\n\n\n\n\t\t\t\t\t\tPlease Wait...");
-        try {
-            for (int i = 10; i <= 100; i += 10) {
-                System.out.printf("\t\t\t\t\t\tLoading %d%%\r", i);
-                Thread.sleep(200);
-            }
-        } catch (InterruptedException e) {
-            System.err.println("Error during loading: " + e.getMessage());
-        }
-        System.out.flush();
-    }
-
-    public static void text() {
-        System.out.println("\n\n\n\n\n\t\t\t\t||Welcome to the Library Management System!||\n");
-        System.out.println("\t\t\t\t===========================================\n\n");
-        System.out.println("\t\t\t ||We're here to help you manage your library efficiently.||\n");
-        System.out.println("\t\t\t\t||Please login to get started.||\n\n\n");
-    }
-
-    public static void menu() {
-        Scanner scanner = new Scanner(System.in);
-
+    private static void welcomeScreen() {
         while (true) {
-            System.out.println("----------------------------------");
-            System.out.println(">>> Library Management System <<< ");
-            System.out.println("----------------------------------\n");
-            System.out.println("> 1. User Management Panel ");
-            System.out.println("> 2. Book Management Panel ");
-            System.out.println("> 3. Exit\n");
-            System.out.print("> Enter the number & hit ENTER: ");
+            System.out.println("\n=== Welcome to the Library System ===");
+            System.out.println("1. Register");
+            System.out.println("2. Login");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
 
-            int number = scanner.nextInt();
-            scanner.nextLine(); // Clear buffer
+            String choice = scanner.nextLine();
 
-            switch (number) {
-                case 1:
-                    userPanel();
+            switch (choice) {
+                case "1":
+                    register();
                     break;
-                case 2:
+                case "2":
+                    login();
+                    break;
+                case "3":
+                    System.out.println("Goodbye!");
+                    return;
+                default:
+                    System.out.println("Invalid input. Try again.");
+            }
+        }
+    }
+
+    private static void register() {
+        System.out.print("Enter a new username: ");
+        String username = scanner.nextLine();
+
+        if (users.containsKey(username)) {
+            System.out.println("Username already exists. Try a different one.");
+            return;
+        }
+
+        System.out.print("Enter a password: ");
+        String password = scanner.nextLine();
+
+        users.put(username, password);
+        System.out.println("Registration successful! You can now log in.");
+    }
+
+    private static void login() {
+        System.out.print("Enter your username: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+
+        if (users.containsKey(username) && users.get(username).equals(password)) {
+            currentUser = username;
+            System.out.println("Login successful! Welcome, " + currentUser + "!");
+            mainMenu();
+        } else {
+            System.out.println("Invalid username or password.");
+        }
+    }
+
+    private static void mainMenu() {
+        while (true) {
+            System.out.println("\n=== Main Menu ===");
+            System.out.println("1. Book Panel");
+            System.out.println("2. Logout");
+            System.out.print("Choose an option: ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
                     bookPanel();
                     break;
-                case 3:
-                    System.out.println("Exiting Program. Goodbye!");
-                    System.exit(0);
-                default:
-                    System.out.println("\n>>> Invalid Input! Redirecting to Main Menu... <<<\n");
-            }
-        }
-    }
-
-    public static void userPanel() {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("-----------------------------------------------");
-            System.out.println(">>> Library Management System - User Panel <<< ");
-            System.out.println("-----------------------------------------------\n");
-            System.out.println("> 1. Add User ");
-            System.out.println("> 2. Search User ");
-            System.out.println("> 3. Delete User ");
-            System.out.println("> 4. List Users ");
-            System.out.println("> 5. Open Main Menu ");
-            System.out.println("> 6. Close the Program... \n");
-
-            System.out.print("> Enter the number & hit ENTER: ");
-            int number = scanner.nextInt();
-            scanner.nextLine(); // Clear buffer
-
-            switch (number) {
-                case 1:
-                    addUser();
-                    break;
-                case 2:
-                    searchUser();
-                    break;
-                case 3:
-                    deleteUser();
-                    break;
-                case 4:
-                    listUsers();
-                    break;
-                case 5:
+                case "2":
+                    System.out.println("Logged out successfully.");
+                    currentUser = null;
                     return;
-                case 6:
-                    System.out.println("Exiting Program. Goodbye!");
-                    System.exit(0);
                 default:
-                    System.out.println("\n>>> Invalid Input! Redirecting to User Panel... <<<\n");
+                    System.out.println("Invalid input. Try again.");
             }
         }
     }
 
-    public static void bookPanel() {
-        Scanner scanner = new Scanner(System.in);
+    private static void bookPanel() {
         while (true) {
-            System.out.println("-----------------------------------------------");
-            System.out.println(">>> Library Management System - Book Panel <<< ");
-            System.out.println("-----------------------------------------------\n");
-            System.out.println("> 1. Add Book ");
-            System.out.println("> 2. List Books ");
-            System.out.println("> 3. Search Book ");
-            System.out.println("> 4. Delete Book ");
-            System.out.println("> 5. Open Main Menu ");
-            System.out.println("> 6. Close the Program... \n");
+            System.out.println("\n--- Book Panel ---");
+            System.out.println("1. Add Book");
+            System.out.println("2. Remove Book");
+            System.out.println("3. Search Book");
+            System.out.println("4. Display All Books");
+            System.out.println("5. Checkout Book");
+            System.out.println("6. Return Book");
+            System.out.println("7. Back to Main Menu");
+            System.out.print("Choose an option: ");
 
-            System.out.print("> Enter the number & hit ENTER: ");
-            int number = scanner.nextInt();
-            scanner.nextLine(); // Clear buffer
+            String choice = scanner.nextLine();
 
-            switch (number) {
-                case 1:
+            switch (choice) {
+                case "1":
                     addBook();
                     break;
-                case 2:
-                    listBooks();
+                case "2":
+                    removeBook();
                     break;
-                case 3:
+                case "3":
                     searchBook();
                     break;
-                case 4:
-                    deleteBook();
+                case "4":
+                    displayBooks();
                     break;
-                case 5:
+                case "5":
+                    checkoutBook();
+                    break;
+                case "6":
+                    returnBook();
+                    break;
+                case "7":
                     return;
-                case 6:
-                    System.out.println("Exiting Program. Goodbye!");
-                    System.exit(0);
                 default:
-                    System.out.println("\n>>> Invalid Input! Redirecting to Book Panel... <<<\n");
+                    System.out.println("Invalid input. Try again.");
             }
         }
     }
 
-    public static void addUser() {
-        // Implementation for adding a user
-        System.out.println("Add user functionality under construction.");
+    // ==== Book Methods ====
+
+    private static void addBook() {
+        System.out.print("Enter book title: ");
+        String title = scanner.nextLine();
+
+        System.out.print("Enter author name: ");
+        String author = scanner.nextLine();
+
+        books.add(new Book(title, author));
+        System.out.println("Book added successfully.");
     }
 
-    public static void searchUser() {
-        // Implementation for searching a user
-        System.out.println("Search user functionality under construction.");
+    private static void removeBook() {
+        System.out.print("Enter book title to remove: ");
+        String title = scanner.nextLine();
+
+        Book book = findBook(title);
+        if (book != null) {
+            books.remove(book);
+            System.out.println("Book removed.");
+        } else {
+            System.out.println("Book not found.");
+        }
     }
 
-    public static void deleteUser() {
-        // Implementation for deleting a user
-        System.out.println("Delete user functionality under construction.");
+    private static void searchBook() {
+        System.out.print("Enter book title to search: ");
+        String title = scanner.nextLine();
+
+        Book book = findBook(title);
+        if (book != null) {
+            System.out.println("Found: " + book);
+        } else {
+            System.out.println("Book not found.");
+        }
     }
 
-    public static void listUsers() {
-        // Implementation for listing users
-        System.out.println("List users functionality under construction.");
+    private static void displayBooks() {
+        if (books.isEmpty()) {
+            System.out.println("No books available.");
+            return;
+        }
+
+        System.out.println("\n--- Available Books ---");
+        for (Book book : books) {
+            System.out.println(book);
+        }
     }
 
-    public static void addBook() {
-        // Implementation for adding a book
-        System.out.println("Add book functionality under construction.");
+    private static void checkoutBook() {
+        System.out.print("Enter book title to checkout: ");
+        String title = scanner.nextLine();
+
+        Book book = findBook(title);
+        if (book != null && !book.isCheckedOut) {
+            book.isCheckedOut = true;
+            book.checkedOutBy = currentUser;
+            System.out.println("Book checked out successfully.");
+        } else if (book != null && book.isCheckedOut) {
+            System.out.println("Book is already checked out by " + book.checkedOutBy);
+        } else {
+            System.out.println("Book not found.");
+        }
     }
 
-    public static void listBooks() {
-        // Implementation for listing books
-        System.out.println("List books functionality under construction.");
+    private static void returnBook() {
+        System.out.print("Enter book title to return: ");
+        String title = scanner.nextLine();
+
+        Book book = findBook(title);
+        if (book != null && book.isCheckedOut && book.checkedOutBy.equals(currentUser)) {
+            book.isCheckedOut = false;
+            book.checkedOutBy = null;
+            System.out.println("Book returned successfully.");
+        } else if (book != null) {
+            System.out.println("You can't return this book. It may not be checked out by you.");
+        } else {
+            System.out.println("Book not found.");
+        }
     }
 
-    public static void searchBook() {
-        // Implementation for searching a book
-        System.out.println("Search book functionality under construction.");
+    private static Book findBook(String title) {
+        for (Book book : books) {
+            if (book.title.equalsIgnoreCase(title)) {
+                return book;
+            }
+        }
+        return null;
     }
 
-    public static void deleteBook() {
-        // Implementation for deleting a book
-        System.out.println("Delete book functionality under construction.");
+    // ==== Book Class ====
+
+    static class Book {
+        String title;
+        String author;
+        boolean isCheckedOut = false;
+        String checkedOutBy = null;
+
+        Book(String title, String author) {
+            this.title = title;
+            this.author = author;
+        }
+
+        public String toString() {
+            return "\"" + title + "\" by " + author + (isCheckedOut ? " [Checked out by: " + checkedOutBy + "]" : " [Available]");
+        }
     }
 }
